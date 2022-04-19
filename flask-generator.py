@@ -4,11 +4,11 @@ import os
 import shutil
 import subprocess
 
-###
-# Virtual env
-# Comment gerer l'imports des views?
-# Gerer postgresql/mysql et sqlite connection
-###
+# TODO: How to deal with views.py
+# TODO: Better way to handle dynamic config (preprod/prod/local/...)
+# TODO: Handle Postgresql/Mysql and sqlite connection in config
+# TODO: Add color for print
+# TODO: Add comment for every methods
 
 DB_CHOICES = ['mysql', 'postgresql', 'sqlite']
 
@@ -26,6 +26,7 @@ def main():
     create_python_files(directory, args)
 
 def create_structure(app_name: str, directory: str):
+    # TODO: make this method safe when deploying
     full_directory = os.path.join(directory, app_name)
     if os.path.exists(full_directory):
         shutil.rmtree(full_directory)
@@ -46,10 +47,10 @@ def create_requirements(directory: str, args: ap.Namespace):
 def create_virtualenv(directory: str, args: ap.Namespace):
     print(f"pyenv virtualenv {args.python} {args.name}")
     process = subprocess.Popen(f'pyenv virtualenv {args.python} {args.name}', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    print('Creating virtual environment')
+    print(f'Creating or using virtual environment {args.name}')
     process.wait()
     if process.returncode == 0:
-        print('Virtual environment created.')
+        print(f'Virtual environment {args.name} created.')
         write_file(os.path.join(directory, ".python-version"), args.name)
         return
     error = str(process.stderr.read())
@@ -82,7 +83,7 @@ def create_python_files(directory: str, args: ap.Namespace):
         write_file(os.path.join(directory, f"{_file}.py"), output)
 
 def write_file(filename: str, content: str):
-    print(filename)
+    print(f"CREATING file {filename}"")
     with open(filename, "w") as f:
         f.write(content)
 
