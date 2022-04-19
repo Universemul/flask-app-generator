@@ -1,0 +1,27 @@
+import os
+
+class Config:
+    DEBUG = False
+    TEST = False
+    SECRET_KEY = os.getenv("SECRET_KEY", "this-is-the-default-key")
+    SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
+    STATIC_FOLDER = 'static'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SESSION_COOKIE_SECURE = False
+    {% if database == "mysql" %}
+    SQLALCHEMY_DATABASE_URI = ""
+    {% elif database == "postgresql" %}
+    SQLALCHEMY_DATABASE_URI = ""
+    {% elif database == "sqlite" %}
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///mydb.db'
+    {% endif %}
+
+class ProductionConfig(Config):
+    SESSION_COOKIE_SECURE = True
+
+class StagingConfig(Config):
+    DEBUG = True
+
+class DevelopmentConfig(Config):
+    DEBUG = True
+    DEVELOPMENT = True
