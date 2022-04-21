@@ -1,9 +1,8 @@
 flask
-{% if database == "mysql" -%}
 Flask-SQLAlchemy
+Flask-Migrate
+{% if database == "mysql" -%}
 {%- endif %}
 {%- if database == "postgresql" -%}
 psycopg2
-Flask-Migrate
-Flask-SQLAlchemy
 {% endif %}

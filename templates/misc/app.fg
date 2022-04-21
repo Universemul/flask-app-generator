@@ -1,23 +1,17 @@
 import logging
 import os
-import config
 
-from flask import Flask
-from models import db
+from apps.config import config_dict
+from apps import create_app, db
 
+config_name = os.environ.get('FLASK_ENV', 'Local')
+try:
+    app_config = config_dict[config_name.lower().title()]
+except:
+    config_names = [x.FLASK_ENV for x in config_dict.values()]
+    exit(f"Error: Invalid <config_mode>. Expected values [{','.join(config_names)}]")
 
-logger = logging.getLogger()
+app = create_app(app_config)
 
-def create_app():
-    logger.info(f'Starting app in {config.APP_ENV} environment')
-    app = Flask(__name__)
-    app.config.from_object('config')
-
-    # initialize SQLAlchemy
-    db.init_app(app)
-    
-    return app
-    
 if __name__ == "__main__":
-    app = create_app()
-    app.run(host='0.0.0.0', debug=True)
+    app.run()

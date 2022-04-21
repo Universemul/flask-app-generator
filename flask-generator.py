@@ -4,13 +4,14 @@ import os
 import shutil
 import subprocess
 
-# TODO: How to deal with views.py
-# TODO: Better way to handle dynamic config (preprod/prod/local/...)
 # TODO: Handle Postgresql/Mysql and sqlite connection in config
 # TODO: Add color for print
 # TODO: Add comment for every methods
+# TODO: add authentication
+# TODO: add utils methods
 
 DB_CHOICES = ['mysql', 'postgresql', 'sqlite']
+BASE_DIR = "apps"
 
 def main():
     parser = ap.ArgumentParser()
@@ -24,6 +25,7 @@ def main():
     create_requirements(directory, args)
     create_run(directory, args)
     create_python_files(directory, args)
+    print(f"CREATION OF {args.name} FINISHED. DON'T FORGET TO INSTALL THE REQUIREMENTS.TXT")
 
 def create_structure(app_name: str, directory: str):
     # TODO: make this method safe when deploying
@@ -64,26 +66,25 @@ def create_virtualenv(directory: str, args: ap.Namespace):
     exit(-1)
 
 def create_run(directory: str, args: ap.Namespace):
-    file_loader = jinja2.FileSystemLoader('templates')
-    env = jinja2.Environment(loader=file_loader)
-    for _file in ['wsgy', 'app']:
-        template = env.get_template(f'misc/{_file}.fg')
-        output = template.render(database=args.db)
-        write_file(os.path.join(directory, f"{_file}.py"), output)
+    render_template('misc/app.fg', directory, args)
 
 def create_python_files(directory: str, args: ap.Namespace):
-    for _file in [
-        "config/__init__", "config/settings", 
-        "models/__init__", "views"
-    ]:
-        file_loader = jinja2.FileSystemLoader('templates')
-        env = jinja2.Environment(loader=file_loader)
-        template = env.get_template(f'python_files/{_file}.fg')
-        output = template.render(database=args.db)
-        write_file(os.path.join(directory, f"{_file}.py"), output)
+    #Look at all directory and file in basedir
+    render_template("python_files/config.fg", f"{directory}/{BASE_DIR}", args)
+    render_template("python_files/__init__.fg", f"{directory}/{BASE_DIR}", args)
+    render_template("python_files/views/home/__init__.fg", f"{directory}/{BASE_DIR}/home", args)
+    render_template("python_files/views/home/routes.fg", f"{directory}/{BASE_DIR}/home", args)
+
+def render_template(filename: str, to_directory: str, args: ap.Namespace):
+    file_loader = jinja2.FileSystemLoader('templates')
+    env = jinja2.Environment(loader=file_loader)
+    template = env.get_template(filename)
+    output = template.render(database=args.db)
+    _file = filename.split('/')[-1].replace('.fg', '.py')
+    write_file(f"{to_directory}/{_file}", output)
 
 def write_file(filename: str, content: str):
-    print(f"CREATING file {filename}"")
+    print(f"CREATING file {filename}")
     with open(filename, "w") as f:
         f.write(content)
 
