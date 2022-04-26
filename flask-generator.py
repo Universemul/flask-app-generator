@@ -4,6 +4,8 @@ import os
 import shutil
 import subprocess
 
+import printer
+
 # TODO: Handle Postgresql/Mysql and sqlite connection in config
 # TODO: Add color for print
 # TODO: Add comment for every methods
@@ -25,7 +27,7 @@ def main():
     create_requirements(directory, args)
     create_run(directory, args)
     create_python_files(directory, args)
-    print(f"CREATION OF {args.name} FINISHED. DON'T FORGET TO INSTALL THE REQUIREMENTS.TXT")
+    printer.success(f"CREATION OF {args.name} FINISHED. DON'T FORGET TO INSTALL THE REQUIREMENTS.TXT")
 
 def create_structure(app_name: str, directory: str):
     # TODO: make this method safe when deploying
@@ -33,8 +35,7 @@ def create_structure(app_name: str, directory: str):
     if os.path.exists(full_directory):
         shutil.rmtree(full_directory)
     #if os.path.isdir(full_directory):
-    #    print(f"The directory {full_directory} already exists. Make a different choice")
-    #    shutil.rmtree(full_directory)
+    #    printer.error(f"The directory {full_directory} already exists. Make a different choice")
     #    exit(-1)
     shutil.copytree("templates/structure", full_directory)
     return full_directory
@@ -47,29 +48,31 @@ def create_requirements(directory: str, args: ap.Namespace):
     write_file(os.path.join(directory, "requirements.txt"), output)
 
 def create_virtualenv(directory: str, args: ap.Namespace):
-    print(f"pyenv virtualenv {args.python} {args.name}")
+    printer.info(f"pyenv virtualenv {args.python} {args.name}")
     process = subprocess.Popen(f'pyenv virtualenv {args.python} {args.name}', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    print(f'Creating or using virtual environment {args.name}')
+    printer.info(f'Creating or using virtual environment {args.name}')
     process.wait()
     if process.returncode == 0:
-        print(f'Virtual environment {args.name} created.')
+        printer.success(f'Virtual environment {args.name} created.')
         write_file(os.path.join(directory, ".python-version"), args.name)
         return
     error = str(process.stderr.read())
     if "already exists" in error:
-        print(f"Do you want to continue with the {args.name} virtualenv (yes or no)")
+        printer.info(f"Do you want to continue with the {args.name} virtualenv (yes or no)")
         continue_with_venv = input(f"").lower()
         if continue_with_venv in ["y", "yes"]:
             write_file(os.path.join(directory, ".python-version"), args.name)
             return
-    print(f"Virtual environment creation failed: {error}")
+        else:
+            printer.error(f"Installation stopped for {args.name}")
+            exit(0)
+    printer.error(f"Virtual environment creation failed: {error}")
     exit(-1)
 
 def create_run(directory: str, args: ap.Namespace):
     render_template('misc/app.fg', directory, args)
 
 def create_python_files(directory: str, args: ap.Namespace):
-    #Look at all directory and file in basedir
     render_template("python_files/config.fg", f"{directory}/{BASE_DIR}", args)
     render_template("python_files/__init__.fg", f"{directory}/{BASE_DIR}", args)
     render_template("python_files/views/home/__init__.fg", f"{directory}/{BASE_DIR}/home", args)
@@ -84,7 +87,7 @@ def render_template(filename: str, to_directory: str, args: ap.Namespace):
     write_file(f"{to_directory}/{_file}", output)
 
 def write_file(filename: str, content: str):
-    print(f"CREATING file {filename}")
+    printer.info(f"CREATING file {filename}")
     with open(filename, "w") as f:
         f.write(content)
 
