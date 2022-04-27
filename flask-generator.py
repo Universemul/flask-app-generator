@@ -1,13 +1,15 @@
-import argparse as ap
 import jinja2
 import os
 import shutil
 import subprocess
 
+import argparse as ap
+from pathlib import Path
+
 import printer
 
 DB_CHOICES = ['mysql', 'postgresql', 'sqlite']
-BASE_DIR = "apps"
+BASE_TEMPLATES_DIR = "templates/base"
 
 def main():
     parser = ap.ArgumentParser()
@@ -16,17 +18,13 @@ def main():
     parser.add_argument('--directory', help="The base directory where you want to create your app", default="/tmp/")
     parser.add_argument('--python', help="Define the python version", default="3.9.1")
     args = parser.parse_args()  
-    #directory = create_structure(args.name, args.directory)
-    #create_virtualenv(directory, args)
-    #create_requirements(directory, args)
-    #create_run(directory, args)
-    #create_python_files(directory, args)
-    files = os.listdir("templates/python_files")
-    print(files)
+    directory = create_structure(args.name, args.directory)
+    create_virtualenv(directory, args)
+    create_requirements(directory, args)
+    create_python_files(directory, args)
     print(f"CREATION OF {args.name} FINISHED. DON'T FORGET TO INSTALL THE REQUIREMENTS.TXT")
 
 def create_structure(app_name: str, directory: str):
-    # TODO: make this method safe when deploying
     full_directory = os.path.join(directory, app_name)
     if os.path.exists(full_directory):
         shutil.rmtree(full_directory)
@@ -34,13 +32,13 @@ def create_structure(app_name: str, directory: str):
     #    printer.error(f"The directory {full_directory} already exists. Make a different choice")
     #    shutil.rmtree(full_directory)
     #    exit(-1)
-    shutil.copytree("templates/structure", full_directory)
+    shutil.copytree("structure", full_directory)
     return full_directory
 
 def create_requirements(directory: str, args: ap.Namespace):
     file_loader = jinja2.FileSystemLoader('templates')
     env = jinja2.Environment(loader=file_loader)
-    template = env.get_template('misc/requirements.fg')
+    template = env.get_template('requirements.fg')
     output = template.render(database=args.db)
     write_file(os.path.join(directory, "requirements.txt"), output)
 
@@ -66,19 +64,16 @@ def create_virtualenv(directory: str, args: ap.Namespace):
     printer.error(f"Virtual environment creation failed: {error}")
     exit(-1)
 
-def create_run(directory: str, args: ap.Namespace):
-    render_template('misc/app.fg', directory, args)
-
 def create_python_files(directory: str, args: ap.Namespace):
-    files = os.listdir("templates/python_files")
-    print(files)
-    render_template("python_files/config.fg", f"{directory}/{BASE_DIR}", args)
-    render_template("python_files/__init__.fg", f"{directory}/{BASE_DIR}", args)
-    render_template("python_files/views/home/__init__.fg", f"{directory}/{BASE_DIR}/home", args)
-    render_template("python_files/views/home/routes.fg", f"{directory}/{BASE_DIR}/home", args)
+    files = [os.path.join(dp, f) for dp, dn, filenames in os.walk(BASE_TEMPLATES_DIR) for f in filenames if not f.startswith('.')]
+    for _f in files:
+        f_directory = os.path.dirname(_f).replace(f"{BASE_TEMPLATES_DIR}", "")
+        if f_directory.startswith('/'):
+            f_directory = f_directory[1:]
+        render_template(_f, f"{directory}/{f_directory}", args)
 
 def render_template(filename: str, to_directory: str, args: ap.Namespace):
-    file_loader = jinja2.FileSystemLoader('templates')
+    file_loader = jinja2.FileSystemLoader('')
     env = jinja2.Environment(loader=file_loader)
     template = env.get_template(filename)
     output = template.render(database=args.db)
@@ -86,9 +81,10 @@ def render_template(filename: str, to_directory: str, args: ap.Namespace):
     write_file(f"{to_directory}/{_file}", output)
 
 def write_file(filename: str, content: str):
+    output = Path(filename)
     printer.info(f"CREATING file {filename}")
-    with open(filename, "w") as f:
-        f.write(content)
+    output.parent.mkdir(exist_ok=True, parents=True)
+    output.write_text(content)
 
 if __name__ == "__main__":
     main()

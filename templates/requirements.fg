@@ -1,6 +1,8 @@
 flask
 Flask-SQLAlchemy
 Flask-Migrate
+flask_login
+flask-restful
 {% if database == "mysql" -%}
 {%- endif %}
 {%- if database == "postgresql" -%}
