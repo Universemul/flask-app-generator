@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from importlib import import_module
 
 from apps.config import config_dict
-from apps.home.routes import initialize_routes
+from apps.api import initialize_routes
 
 db = SQLAlchemy()
 
