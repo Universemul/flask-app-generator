@@ -1,9 +1,8 @@
 TODO:
 - Handle Postgresql/Mysql and sqlite connection in config
-- add authentication and user model
-- Handle migration by default
 - add utils methods
 
 
 In Progress:
-- Generic Listing files in python_files directory
+- Blueprint config and endpoint discovery
+- add authentication and user model
