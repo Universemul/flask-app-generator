@@ -4,11 +4,7 @@ import os
 import shutil
 import subprocess
 
-# TODO: Handle Postgresql/Mysql and sqlite connection in config
-# TODO: Add color for print
-# TODO: Add comment for every methods
-# TODO: add authentication
-# TODO: add utils methods
+import printer
 
 DB_CHOICES = ['mysql', 'postgresql', 'sqlite']
 BASE_DIR = "apps"
@@ -69,7 +65,11 @@ def create_run(directory: str, args: ap.Namespace):
     render_template('misc/app.fg', directory, args)
 
 def create_python_files(directory: str, args: ap.Namespace):
+<<<<<<< Updated upstream
     #Look at all directory and file in basedir
+=======
+
+>>>>>>> Stashed changes
     render_template("python_files/config.fg", f"{directory}/{BASE_DIR}", args)
     render_template("python_files/__init__.fg", f"{directory}/{BASE_DIR}", args)
     render_template("python_files/views/home/__init__.fg", f"{directory}/{BASE_DIR}/home", args)
