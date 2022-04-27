@@ -16,12 +16,14 @@ def main():
     parser.add_argument('--directory', help="The base directory where you want to create your app", default="/tmp/")
     parser.add_argument('--python', help="Define the python version", default="3.9.1")
     args = parser.parse_args()  
-    directory = create_structure(args.name, args.directory)
-    create_virtualenv(directory, args)
-    create_requirements(directory, args)
-    create_run(directory, args)
-    create_python_files(directory, args)
-    printer.success(f"CREATION OF {args.name} FINISHED. DON'T FORGET TO INSTALL THE REQUIREMENTS.TXT")
+    #directory = create_structure(args.name, args.directory)
+    #create_virtualenv(directory, args)
+    #create_requirements(directory, args)
+    #create_run(directory, args)
+    #create_python_files(directory, args)
+    files = os.listdir("templates/python_files")
+    print(files)
+    print(f"CREATION OF {args.name} FINISHED. DON'T FORGET TO INSTALL THE REQUIREMENTS.TXT")
 
 def create_structure(app_name: str, directory: str):
     # TODO: make this method safe when deploying
@@ -68,11 +70,8 @@ def create_run(directory: str, args: ap.Namespace):
     render_template('misc/app.fg', directory, args)
 
 def create_python_files(directory: str, args: ap.Namespace):
-<<<<<<< Updated upstream
-    #Look at all directory and file in basedir
-=======
-
->>>>>>> Stashed changes
+    files = os.listdir("templates/python_files")
+    print(files)
     render_template("python_files/config.fg", f"{directory}/{BASE_DIR}", args)
     render_template("python_files/__init__.fg", f"{directory}/{BASE_DIR}", args)
     render_template("python_files/views/home/__init__.fg", f"{directory}/{BASE_DIR}/home", args)
