@@ -1,0 +1,32 @@
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, EmailField
+from wtforms.validators import InputRequired, ValidationError, Length, EqualTo
+
+from apps.authentication.models import User
+
+def invalid_credentials(form, field):
+    password = field.data
+    email = form.email.data
+
+    user_data: User = User.query.filter_by(email=email).first()
+    if user_data is None:
+        raise ValidationError("email or password is incorrect")
+
+    if not user_data.check_password(password):
+        raise ValidationError("email or password is incorrect")
+
+class RegistrationForm(FlaskForm):
+
+    email = EmailField('email', validators=[InputRequired(message="Email required")])
+    password = PasswordField('password', validators=[InputRequired(message="Password required"), Length(min=4, max=25, message="Password must be between 4 and 25 characters")])
+    confirm_pswd = PasswordField('confirm_pswd', validators=[InputRequired(message="Password required"), EqualTo('password', message="Passwords must match")])
+
+    def validate_email(self, email):
+        user_object = User.query.filter_by(email=email.data).first()
+        if user_object:
+            raise ValidationError("Email already exists. Select a different email.")
+
+class LoginForm(FlaskForm):
+
+    email = EmailField('email', validators=[InputRequired(message="email required")])
+    password = PasswordField('password', validators=[InputRequired(message="Password required"), invalid_credentials])

@@ -1,0 +1,6 @@
+from apps.authentication.routes import Login, Logout, Signup
+
+def initialize_routes(api):
+    api.add_resource(Login, '/login')
+    api.add_resource(Logout, '/logout')
+    api.add_resource(Signup, '/signup')

@@ -1,8 +1,6 @@
 TODO:
-- Handle Postgresql/Mysql and sqlite connection in config
+- Handle Postgresql/Mysql/Sqlite/MongoDB connection in config
 - add utils methods
 
-
 In Progress:
-- add authentication and user model
 - Update README
