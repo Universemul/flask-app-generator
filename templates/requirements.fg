@@ -3,6 +3,9 @@ Flask-SQLAlchemy
 Flask-Migrate
 flask_login
 flask-restful
+Flask-WTF
+WTForms
+
 {% if database == "mysql" -%}
 {%- endif %}
 {%- if database == "postgresql" -%}

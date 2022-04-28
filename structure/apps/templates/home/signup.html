@@ -1,0 +1,14 @@
+{% from 'layout/field.html' import displayField %}
+{% extends 'layout/base.html' %}
+
+{% block content %}
+    <form action="{{ url_for('signup') }}", method="POST">
+        {{ displayField(form.email, 'Email', autocomplete="off", autofocus=true) }}
+        {{ displayField(form.password, 'Password') }}
+        {{ displayField(form.confirm_pswd, 'Retype Password') }}
+        <div class="form-group">
+            <input type="submit" value="Create" class="btn btn-warning">
+        </div>
+        {{ form.csrf_token }}
+    </form>
+{% endblock %}

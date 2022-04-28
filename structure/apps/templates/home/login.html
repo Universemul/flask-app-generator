@@ -1,0 +1,17 @@
+{% from 'layout/field.html' import displayField %}
+{% extends 'layout/base.html' %}
+
+{% block content %}
+    <h2>Login now!</h2>
+
+    <form action="{{ url_for('login') }}", method="POST">
+        {{ displayField(form.email, 'Email', autocomplete="off", autofocus=true) }}
+        {{ displayField(form.password, 'Password') }}
+        <div class="form-group">
+            <input type="submit" value="Login" class="btn btn-warning">
+        </div>
+        {{ form.csrf_token }}
+    </form>
+
+    <hr>
+{% endblock %}
