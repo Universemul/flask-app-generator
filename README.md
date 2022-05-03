@@ -6,10 +6,7 @@
 Since Flask is commonly used in kickstarting a project, developers shouldn't waste their time with creating folders like static/css, static/js, configuration, controllers, models etc. Aim of Flask-App-Generator is __*auto generating necessity folders and files according to your architectural pattern*__.
 
 ### Architecture
-Flask-App-Generator supports two different patterns:
 
-#### simple
-- It is a very simple flask application structure for very small applications
 ```
 /your_project_folder
     .python_version
