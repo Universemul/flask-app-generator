@@ -65,7 +65,9 @@ def create_virtualenv(directory: str, args: ap.Namespace):
     exit(-1)
 
 def create_python_files(directory: str, args: ap.Namespace):
-    files = [os.path.join(dp, f) for dp, dn, filenames in os.walk(BASE_TEMPLATES_DIR) for f in filenames if not f.startswith('.')]
+    exclude_filenames = ['.DS_Store', 'DS_Store']
+    files = [os.path.join(dp, f) for dp, dn, filenames in os.walk(BASE_TEMPLATES_DIR) for f in filenames if f not in exclude_filenames]
+    print(files)
     for _f in files:
         f_directory = os.path.dirname(_f).replace(f"{BASE_TEMPLATES_DIR}", "")
         if f_directory.startswith('/'):
@@ -76,7 +78,7 @@ def render_template(filename: str, to_directory: str, args: ap.Namespace):
     file_loader = jinja2.FileSystemLoader('')
     env = jinja2.Environment(loader=file_loader)
     template = env.get_template(filename)
-    output = template.render(database=args.db)
+    output = template.render(database=args.db, name=args.name)
     _file = filename.split('/')[-1].replace('.fg', '.py')
     write_file(f"{to_directory}/{_file}", output)
 

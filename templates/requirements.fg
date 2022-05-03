@@ -1,3 +1,4 @@
+decouple
 flask
 Flask-SQLAlchemy
 Flask-Migrate
@@ -7,6 +8,7 @@ Flask-WTF
 WTForms
 
 {% if database == "mysql" -%}
+flask_mysqldb
 {%- endif %}
 {%- if database == "postgresql" -%}
 psycopg2
