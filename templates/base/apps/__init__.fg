@@ -49,6 +49,7 @@ def create_app():
     app = Flask(__name__)
     api = Api(app)
     app.config.from_object(config)
+    print(config.SQLALCHEMY_DATABASE_URI)
     app.config["APPLICATION_ROOT"] = "/"
     app.config['TEMPLATES_AUTO_RELOAD'] = True
 

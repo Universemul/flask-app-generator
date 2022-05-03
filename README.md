@@ -72,9 +72,9 @@ cd ~/todo-app && pyenv activate todo-app && flask run
 
 - Add a run.py script to run the application
 - Adding more options for configuration file.
-- Better smart code generation for Postgresql/Mysql/Sqlite/MongoDB database
-- Smart configuration for database
+- Handle MongoDB and Elasticsearch configuration
 - Install via pip
+- Handle multiple database connection?
 
 
 ## Contribution
